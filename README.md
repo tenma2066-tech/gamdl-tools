@@ -9,7 +9,9 @@ Apple Music download tools built on top of [gamdl](https://github.com/glomatico/
 | `gamdl-gui.exe` | GUI downloader (double-click to run, no Python needed) |
 | `gamdl-dl.exe` | CLI downloader (no Python needed) |
 | `gamdl_gui.py` | GUI source (requires Python + gamdl installed) |
-| `gamdl_web.py` | **Web UI — control downloads from an iPhone/browser** (requires Python + gamdl installed) |
+| `ios/setup.sh` | **iPhone-only install** (run inside the iSH app — no PC needed) |
+| `ios/amget.sh` | **iPhone-only interactive downloader** (run inside iSH) |
+| `gamdl_web.py` | Web UI — control a PC's downloads from a phone browser (requires a PC) |
 | `gamdl_dl.py` | CLI entry point source |
 | `get-alac.ps1` | ALAC download + FLAC conversion helper (requires WSL2 + Wrapper) |
 | `amget.ps1` | Interactive loop wrapper for gamdl |
@@ -40,12 +42,37 @@ set PYTHONUTF8=1
 gamdl-dl.exe --output-path D:\music --song-codec-priority aac-legacy "https://music.apple.com/jp/..."
 ```
 
-## Use from an iPhone (`gamdl_web.py`)
+## Use on an iPhone — no PC (`ios/`)
 
-gamdl itself **cannot run on iOS** — it needs Widevine DRM decryption and `ffmpeg`,
-which Apple does not allow on the iPhone. Instead, run gamdl on a PC on your home
-network and drive it from the iPhone browser. The download runs on the PC and is
-saved there; the phone is just a remote control.
+You can run gamdl **entirely on the iPhone**, no computer required. gamdl 3.5.1
+ships with a built-in Widevine device and decrypts songs in pure Python, so on
+iOS you only need Python + ffmpeg, which the free **iSH** app (Alpine Linux)
+provides.
+
+**→ Full step-by-step guide (Japanese): [`docs/IPHONE.md`](docs/IPHONE.md)**
+
+Short version:
+
+1. Install the **iSH Shell** app (App Store, free).
+2. Get `cookies.txt` on the phone with the **Orion Browser** + the
+   *Get cookies.txt LOCALLY* extension, and drop it into iSH's home folder.
+3. In iSH:
+   ```sh
+   wget -O setup.sh https://raw.githubusercontent.com/tenma2066-tech/gamdl-tools/master/ios/setup.sh
+   wget -O amget.sh https://raw.githubusercontent.com/tenma2066-tech/gamdl-tools/master/ios/amget.sh
+   sh setup.sh      # one-time install (slow under emulation: 10-30 min)
+   sh amget.sh      # paste an Apple Music URL and download
+   ```
+4. Files land in `~/music`, visible in the iOS **Files app → iSH → music**.
+
+> iPhone-only mode is **AAC 256kbps** only. ALAC/FLAC needs the Wrapper
+> decryption server, which cannot run on iOS — use a PC for lossless.
+
+## Control a PC from a phone browser (`gamdl_web.py`)
+
+If you *do* have a PC, you can also run gamdl on the PC and drive it from the
+iPhone browser. The download runs on the PC and is saved there; the phone is
+just a remote control.
 
 ### On the PC (one-time)
 
